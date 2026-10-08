@@ -1,0 +1,2 @@
+# Un dominio por línea. Sirve para probar el bloqueo.
+prueba-bloqueo.com

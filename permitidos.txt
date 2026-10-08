@@ -1,0 +1,1 @@
+# Dominios que nunca se bloquean (evitan falsos positivos).
