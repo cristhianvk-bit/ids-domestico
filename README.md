@@ -8,35 +8,18 @@ Sin inspección profunda de paquetes (DPI) y sin descifrar HTTPS: solo se usan n
 
 | Carpeta | Qué contiene |
 |---|---|
-| [`sumidero/`](sumidero/) | Lo que corre en la Raspberry Pi (o en la VM `pi` del laboratorio): sumidero DNS, captura de flujos y respuesta activa. |
-| [`ml/`](ml/) | Entrenamiento y evaluación de los modelos de machine learning (dominios DNS y flujos tipo NetFlow), más la medición de DNS protectores. Ver [`ml/LEEME.md`](ml/LEEME.md). |
+| [`modelos_oficiales/`](modelos_oficiales/) | Los 2 modelos de ML del sistema: `modelo_dns_v2.pkl` (dominios DGA) y `modelo_netflow_combinado_xgb.pkl` (flujos). Qué detecta cada uno y cómo abrirlos: [`LEEME`](modelos_oficiales/LEEME.md). |
+| [`raspberry/`](raspberry/) | Todo lo que se instala en la Raspberry Pi: sumidero DNS, captura y clasificación de flujos, respuesta activa. Instalación y uso: [`LEEME`](raspberry/LEEME.md). |
+| [`entrenamiento/`](entrenamiento/) | Scripts para descargar los datasets, entrenar y evaluar los modelos, experimentos y resultados citados en el artículo: [`LEEME`](entrenamiento/LEEME.md). |
 
-### `sumidero/`
+## Resumen de cómo protege
 
-| Archivo | Qué hace |
-|---|---|
-| `dns_sumidero.py` | Sumidero DNS: lista blanca → listas de bloqueo (StevenBlack + `bloqueados.txt`) → clasificador de IA → reenvío al DNS superior. Registra cada consulta en `consultas.csv`. |
-| `caracteristicas.py`, `entrenar_modelo_dominios.ipynb` | Versión temprana del clasificador de dominios que usa hoy el sumidero (el modelo v2 está en `ml/2_dns/`). |
-| `flujos.py` | Captura de flujos con scapy → `flujos.csv`. |
-| `flujos_cic.py` | Flujos con columnas estilo CIC (cicflowmeter) clasificados con el modelo XGBoost de `ml/1_netflow/`. |
-| `respuesta.py`, `router_ids.nft` | Respuesta activa: TCP RST y bloqueo temporal de IP en el router (SSH + nftables). |
+| Capa | Dónde | Qué atrapa |
+|---|---|---|
+| Listas de bloqueo (StevenBlack) | `raspberry/dns_sumidero.py` | Dominios peligrosos ya conocidos |
+| DNS protector (`--superior 1.1.1.2` o `9.9.9.9`) | `raspberry/dns_sumidero.py` | Phishing y malware reportados (Cloudflare 1.1.1.2 bloqueó el 80,1 % del phishing activo de OpenPhish) |
+| Modelo DNS | `modelos_oficiales/modelo_dns_v2.pkl` | Dominios generados por malware (DGA): 74,3 % con 0,44 % de falsas alarmas |
+| Modelo de flujos | `modelos_oficiales/modelo_netflow_combinado_xgb.pkl` | DoS, fuerza bruta, escaneo, botnet y ataques web por metadatos de conexión |
 
-Uso (desde la carpeta `sumidero/`):
-
-```bash
-sudo venv/bin/python dns_sumidero.py --puerto 53                       # reenvía a 1.1.1.1
-sudo venv/bin/python dns_sumidero.py --puerto 53 --superior 1.1.1.2    # DNS protector de Cloudflare
-sudo venv/bin/python dns_sumidero.py --puerto 53 --superior 9.9.9.9    # Quad9
-```
-
-Con un DNS protector, lo que ese servidor bloquea queda registrado como `BLOQUEADO_SUPERIOR`.
-
-### `ml/`
-
-- `1_netflow/`: descarga de CIC-IDS2017 y CSE-CIC-IDS2018, entrenamiento y evaluación del clasificador de flujos.
-- `2_dns/`: detector de dominios v2 (ensamble XGBoost + regresión logística sobre el dominio registrable)
-  y `medir_dns_protector.py` (cuánto bloquean Cloudflare 1.1.1.2 y Quad9).
-- `resultados/`: salidas de los experimentos citadas en el artículo.
-
-Los datasets y los modelos entrenados (`.pkl`) no se suben: se regeneran con los scripts.
+Los datasets no se suben: se descargan con los scripts de `entrenamiento/`.
 La primera versión del código de ML la hizo Lukas (repo `sassan225/Machine-Learning-IDS-IPS`).

@@ -105,10 +105,12 @@ def nuevo_xgb(semilla=42):
 
 
 def nuevo_lr(semilla=42):
+    # Mejora D2 (oct-2026, ver experimentos_dns.py): n-gramas de 1 a 5 letras y mas vocabulario.
+    # Antes: ngram_range=(1, 3), min_df=5, max_features=60000.
     return Pipeline([
-        ("tfidf", TfidfVectorizer(analyzer="char", ngram_range=(1, 3), min_df=5,
-                                  max_features=60000, sublinear_tf=True, dtype=np.float32)),
-        ("clf", LogisticRegression(C=4.0, max_iter=400, random_state=semilla)),
+        ("tfidf", TfidfVectorizer(analyzer="char", ngram_range=(1, 5), min_df=3,
+                                  max_features=300000, sublinear_tf=True, dtype=np.float32)),
+        ("clf", LogisticRegression(C=4.0, max_iter=600, random_state=semilla)),
     ])
 
 
