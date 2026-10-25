@@ -10,7 +10,7 @@ Todo lo que se instala en la Raspberry Pi.
 | `caracteristicas.py` | Características del clasificador antiguo que todavía usa `dns_sumidero.py` (se quita al conectar el modelo v2). |
 | `flujos.py` | Captura de flujos con scapy (16 columnas propias) → `flujos.csv`. |
 | `flujos_cic.py` | Flujos con columnas estilo CIC (cicflowmeter 0.5.0, con dos arreglos) clasificados con el modelo de flujos. |
-| `respuesta.py`, `router_ids.nft` | Respuesta activa: TCP RST y bloqueo temporal de IP en el router (SSH con llave + nftables). |
+| `respuesta.py` | Respuesta activa: TCP RST y orden de bloqueo temporal de IP al router por SSH con llave. Lo que va en el router está en [`../router/`](../router/). |
 
 ## Instalación (Debian / Raspberry Pi OS)
 
