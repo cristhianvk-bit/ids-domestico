@@ -1,0 +1,10 @@
+# Mismas versiones con las que Lukas entrenó los modelos (si cambian, los .pkl pueden no abrir)
+scikit-learn==1.9.1
+xgboost==3.4.1
+pandas
+numpy
+joblib
+requests
+tldextract
+scapy
+dnslib

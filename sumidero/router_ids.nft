@@ -1,0 +1,18 @@
+# Agregar AL FINAL de /etc/nftables.conf en la VM "router".
+# Crea el conjunto "bloqueados": las IPs que la pi mande bloquear quedan sin
+# acceso durante el tiempo indicado (por ejemplo 10 minutos) y luego se liberan solas.
+table inet ids {
+    set bloqueados {
+        type ipv4_addr
+        flags timeout
+    }
+    chain input {
+        type filter hook input priority 0;
+        ip saddr @bloqueados drop
+    }
+    chain forward {
+        type filter hook forward priority 0;
+        ip saddr @bloqueados drop
+        ip daddr @bloqueados drop
+    }
+}

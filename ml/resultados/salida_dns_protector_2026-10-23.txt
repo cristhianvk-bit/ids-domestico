@@ -1,0 +1,22 @@
+Medicion de DNS protectores - 2026-10-23
+Fuentes guardadas en datos/dns_protector/2026-10-23/ (muestra aleatoria, semilla 42)
+URLhaus: datos\dns\urlhaus.txt (actualizado: 2026-10-15 01:17:22 (UTC))
+Porcentaje bloqueado sobre los hosts VIVOS (1.1.1.1 da IP) [IC 95 % de Wilson]
+
+Lista                   hosts  vivos |            StevenBlack |     Cloudflare 1.1.1.2 |          Quad9 9.9.9.9 |  StevenBlack + 1.1.1.2 |    StevenBlack + Quad9
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+URLhaus (malware)        2000   1028 |     27.5 % [24.9-30.3] |     37.4 % [34.4-40.4] |     43.3 % [40.3-46.3] |     39.4 % [36.5-42.4] |     43.7 % [40.7-46.7]
+OpenPhish (phishing)      259    251 |        0.0 % [0.0-1.5] |     80.1 % [74.7-84.6] |     18.7 % [14.4-24.0] |     80.1 % [74.7-84.6] |     18.7 % [14.4-24.0]
+Tranco (normales)        1000    896 |        0.2 % [0.1-0.8] |        0.3 % [0.1-1.0] |        0.4 % [0.2-1.1] |        0.6 % [0.2-1.3] |        0.7 % [0.3-1.5]
+
+Cloudflare 1.1.1.2 sobre TODOS los hosts (incluye muertos; 0.0.0.0 no es ambiguo):
+  URLhaus (malware)       27.1 % [25.2-29.1]
+  OpenPhish (phishing)    78.0 % [72.6-82.6]
+  Tranco (normales)        0.3 % [0.1-0.9]
+
+Respuestas de cada servidor (todos los hosts):
+  1.1.1.1  ip=2175  nx_con_soa=931  sin_ip=99  servfail=44  0.0.0.0=7  timeout=3
+  1.1.1.2  ip=1587  nx_con_soa=793  0.0.0.0=747  sin_ip=91  servfail=33  timeout=8
+  9.9.9.9  ip=1675  nx_sin_soa=846  nx_con_soa=603  sin_ip=90  servfail=34  timeout=6  0.0.0.0=5
+
+Nota: en Tranco, 'bloqueado' = falsa alarma (sitio normal bloqueado).
