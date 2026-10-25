@@ -1,0 +1,23 @@
+# Datos (pesan GB y se descargan con los scripts)
+datos/
+
+# Modelos entrenados (se guardan en Drive, no en GitHub)
+modelos/
+*.pkl
+
+# Resultados con trafico real (datos personales)
+resultados/*.csv
+
+# Capturas de red
+*.pcap
+*.pcapng
+
+# Respaldo de los scripts viejos
+_historial_lukas/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.vscode/
