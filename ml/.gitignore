@@ -1,9 +1,10 @@
 # Datos (pesan GB y se descargan con los scripts)
 datos/
 
-# Modelos entrenados (se guardan en Drive, no en GitHub)
-modelos/
+# Modelos entrenados: solo se suben los oficiales de modelos/ (las versiones viejas no)
+modelos/anteriores/
 *.pkl
+!modelos/*.pkl
 
 # Resultados con trafico real (datos personales)
 resultados/*.csv

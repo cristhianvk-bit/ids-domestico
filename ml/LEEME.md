@@ -32,6 +32,17 @@ ML - movil/
 └── _historial_lukas/        ← respaldo de los scripts originales, sin tocar
 ```
 
+## Modelos oficiales (`modelos/`)
+
+| Archivo | Qué hace | Resultado (ver `resultados/`) |
+|---|---|---|
+| `modelo_dns_v2.pkl` | Ensamble XGBoost + regresión logística sobre el dominio registrable. Umbrales: ALERTA > 0,626, BLOQUEO > 0,898. | AUC 0,963; detecta 69 % de DGA con 0,44 % de falsas alarmas |
+| `modelo_netflow_combinado_xgb.pkl` | XGBoost de 6 clases (normal, DoS_DDoS, FuerzaBruta, PortScan, Botnet, WebAttack), entrenado con 2017 + 2018 sin `Destination Port` (experimento B). | F1 macro 0,80; entre datasets 0,19–0,25 |
+| `modelo_netflow_2018_xgb.pkl` | Igual, pero entrenado solo con CSE-CIC-IDS2018 (para las pruebas de generalización). | F1 macro 0,80 en 2018 |
+
+Se abren con `joblib.load()` y **solo con las mismas versiones con que se guardaron**: `scikit-learn==1.9.1` y `xgboost==3.4.1` (ya fijadas en `requirements.txt`).
+Cada `.pkl` es un diccionario con el modelo, las columnas y las clases. Abre únicamente `.pkl` de este repositorio: un `.pkl` de origen desconocido puede ejecutar código al cargarse.
+
 ## Instalación (una sola vez)
 
 1. Instala **Python 3.13** desde https://www.python.org/downloads/ y marca la casilla **"Add python.exe to PATH"**.
