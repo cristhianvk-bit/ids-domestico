@@ -8,10 +8,9 @@ Entrenamiento de los dos modelos del proyecto:
 ## Estructura
 
 ```
-ML - movil/
+entrenamiento/
 ├── LEEME.md                 ← este archivo
 ├── requirements.txt         ← librerías a instalar
-├── ordenar_carpetas.bat     ← se usa UNA vez para ordenar lo viejo
 │
 ├── 1_netflow/
 │   ├── descargar_2017.py    ← baja CIC-IDS2017        → datos/cic-ids2017/
@@ -24,13 +23,24 @@ ML - movil/
 │   ├── descargar_dns.py     ← baja Tranco, DGA, URLhaus y OpenPhish → datos/dns/
 │   ├── preparar_phiusiil.py ← (MEJORA) agrega 100 945 URLs de phishing de UCI
 │   ├── entrenar_dns.py      ← entrena y evalúa → modelos/modelo_dns_v2.pkl
+│   ├── experimentos_dns.py  ← compara mejoras sin tocar el modelo (de aquí salió D1+D2)
+│   ├── medir_dns_protector.py ← mide cuánto bloquean Cloudflare 1.1.1.2 y Quad9
 │   └── probar_dns.py        ← prueba el modelo con dominios reales de tu PC
 │
-├── datos/                   ← datasets (NO se suben a GitHub)
-├── modelos/                 ← .pkl actuales (anteriores/ = versiones viejas)
+├── antiguo/                 ← notebook del primer clasificador de dominios (superado por 2_dns/)
 ├── resultados/              ← salidas de los entrenamientos (van al artículo)
-└── _historial_lukas/        ← respaldo de los scripts originales, sin tocar
+│
+├── datos/                   ← datasets (se crean al descargar; NO se suben a GitHub)
+└── modelos/                 ← aquí guardan los scripts los .pkl nuevos (NO se suben)
 ```
+
+Los modelos que usa el sistema están en [`../modelos_oficiales/`](../modelos_oficiales/).
+Si vuelves a entrenar y el modelo nuevo es mejor, cópialo de `modelos/` a `../modelos_oficiales/`.
+
+**Modelo DNS actual (25/10/2026):** versión `dns_v2_d1d2`. Se entrena solo para DGA (URLhaus y OpenPhish
+quedan solo para el examen) y usa n-gramas de 1 a 5 letras. Detecta el 74,3 % de los DGA con 0,44 % de
+falsas alarmas (antes 69,5 %). Comparación completa en `resultados/salida_experimentos_dns.txt`; la salida
+del modelo anterior está en `resultados/salida_dns_base_2026-10-15.txt`.
 
 ## Instalación (una sola vez)
 

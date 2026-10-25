@@ -1,0 +1,29 @@
+﻿Cargando datos (mismas fuentes y semilla que entrenar_dns.py)...
+train=154248  examen DGA vs normales=38175 (10790 DGA)
+  base   listo (22 s)
+  D1     listo (34 s)
+  D2     listo (56 s)
+  D1+D2  listo (78 s)
+
+====================================================================================================
+RESULTADOS (umbrales fijados con los normales del examen; URLhaus/OpenPhish/Tranco-cola al umbral 0,5 %)
+====================================================================================================
+             AUC  DGA_al_0,5%FP  DGA_al_0,05%FP  URLhaus_det  OpenPhish_det  FP_Tranco_cola_0,5%  FP_Tranco_cola_0,05%  AUC_familias_nuevas
+variante                                                                                                                                   
+base      0.9736          69.94           44.19         2.40           7.69                 0.87                  0.14               0.9402
+D1        0.9735          71.10           44.97         1.60           7.69                 0.90                  0.16               0.9407
+D2        0.9812          75.25           48.62         3.47           7.69                 0.96                  0.16               0.9530
+D1+D2     0.9814          76.34           49.18         1.87           7.69                 0.94                  0.18               0.9552
+
+Tranco-cola = 20000 sitios normales de los puestos 100.001-1.000.000 (no vistos al entrenar):
+su % marcado es la tasa de falsas alarmas fuera de la muestra de entrenamiento.
+
+Deteccion de familias DGA nunca vistas al 0,5 % de falsas alarmas (ramdo, necurs, pykspa, cryptolocker, vawtrak):
+              base    D1    D2  D1+D2
+ramdo         80.1  85.2  93.1   95.5
+necurs        80.4  82.1  84.4   86.4
+pykspa        31.6  33.2  42.2   46.0
+cryptolocker  81.8  82.9  88.3   89.8
+vawtrak        0.4   0.4   0.5    0.6
+
+Tiempo total: 1.3 min

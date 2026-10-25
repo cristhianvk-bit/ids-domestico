@@ -63,6 +63,10 @@ N_FOLDS = 5
 HACER_LOSO = True             # evaluaciones "sin esta fuente" (tardan mas)
 N_FAMILIAS_FUERA = 5
 SEMILLA = 42
+# Mejora D1 (oct-2026, ver experimentos_dns.py): el modelo se entrena SOLO para DGA.
+# Por el nombre no distingue phishing ni malware (eso lo cubren las listas y el DNS protector),
+# asi que estas fuentes ya no entran al entrenamiento; siguen en el examen para informar su deteccion.
+SOLO_EXAMEN = {"urlhaus", "openphish"}
 # ====================================================================
 
 
@@ -207,10 +211,11 @@ D["txt"] = C.textos(D.dominio)
 print("\n=== RESUMEN DEL DATASET ===")
 print(D.groupby(["label", "grupo", "split"]).size().unstack(fill_value=0).to_string())
 
-TR = D[D.split == "train"].reset_index(drop=True)
+TR = D[(D.split == "train") & ~D.grupo.isin(SOLO_EXAMEN)].reset_index(drop=True)
 TE = D[D.split == "test"].reset_index(drop=True)
 RT = D[D.split == "real_test"].reset_index(drop=True)
-print(f"\ntrain={len(TR)}  test={len(TE)}  real_test={len(RT)}  "
+print(f"\nFuentes solo para el examen (no se entrena con ellas): {sorted(SOLO_EXAMEN)}")
+print(f"train={len(TR)}  test={len(TE)}  real_test={len(RT)}  "
       f"(maliciosos en train: {TR.label.mean():.1%})")
 
 # ---------------------- 1) validacion cruzada en TRAIN ----------------------
@@ -261,13 +266,21 @@ tab = TE.assign(marcado=TE.p > THR_ALERTA).groupby(["label", "grupo"]).agg(
     n=("marcado", "size"), marcado=("marcado", "mean")).round(4)
 print(tab.to_string())
 
+solo = TE[~TE.grupo.isin(SOLO_EXAMEN)]
+y_s, p_s = solo.label.values, solo.p.values
+print(f"\nSolo DGA vs normales (sin las fuentes de solo examen): AUC = {roc_auc_score(y_s, p_s):.4f}")
+for nombre, thr in (("ALERTA", THR_ALERTA), ("BLOQUEO", THR_BLOQUEO)):
+    tpr, fpr = tpr_fpr(y_s, p_s, thr)
+    print(f"  {nombre:<8} detecta {tpr:6.1%} de los DGA | falsas alarmas {fpr:.3%} de los normales")
+
 # -------------------- 3) generalizacion a fuentes no vistas --------------------
 if HACER_LOSO:
     print("\n" + "=" * 70 + "\n3) GENERALIZACION: entrenar SIN una fuente y probar en ella\n" + "=" * 70)
     print("(AUC y deteccion al 0.5% de falsas alarmas, medidos contra los normales del examen)")
     normales_te = TE[TE.label == 0]
     filas = []
-    for g in [g for g in D[D.label == 1].grupo.unique() if (D.grupo == g).sum() >= 30]:
+    for g in [g for g in D[D.label == 1].grupo.unique()
+              if (D.grupo == g).sum() >= 30 and g not in SOLO_EXAMEN]:
         tr_sin = TR[TR.grupo != g]
         pos = D[(D.grupo == g) & (D.split != "real_test")]
         if tr_sin.label.nunique() < 2 or tr_sin.label.sum() < 30:
@@ -322,11 +335,11 @@ else:
 
 # ---------------------- 5) modelo final (todo el dato) ----------------------
 print("\n" + "=" * 70 + "\n5) MODELO FINAL\n" + "=" * 70)
-TODO = D[D.split.isin(["train", "test"])].reset_index(drop=True)
+TODO = D[D.split.isin(["train", "test"]) & ~D.grupo.isin(SOLO_EXAMEN)].reset_index(drop=True)
 Mf = C.entrenar_modelos(TODO[C.FEATURES], TODO.txt, TODO.label.values, SEMILLA)
 paquete = {"xgb": Mf["xgb"], "lr": Mf["lr"], "umbral_alerta": THR_ALERTA, "umbral_bloqueo": THR_BLOQUEO,
-           "allowlist": frozenset(ALLOW), "features": C.FEATURES, "version": "dns_v2",
-           "fuentes": sorted(D.grupo.unique()), "n_filas": int(len(TODO)),
+           "allowlist": frozenset(ALLOW), "features": C.FEATURES, "version": "dns_v2_d1d2",
+           "fuentes": sorted(TODO.grupo.unique()), "n_filas": int(len(TODO)),
            "fpr_alerta": FPR_ALERTA, "fpr_bloqueo": FPR_BLOQUEO}
 joblib.dump(paquete, os.path.join(MODELOS, "modelo_dns_v2.pkl"))
 print(f"Guardado: modelo_dns_v2.pkl  (entrenado con {len(TODO)} dominios, "

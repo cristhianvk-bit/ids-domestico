@@ -1,0 +1,97 @@
+﻿Cargando fuentes...
+  benigno_tranco     label=0     99884 dominios registrables
+  benigno_alexa      label=0     38351 dominios registrables
+  dga                label=1     53951 dominios registrables (24 familias)
+  urlhaus            label=1      2011 dominios registrables
+  openphish          label=1        97 dominios registrables
+  real               label=0        29 dominios registrables
+
+Dominios 'maliciosos' que tambien estan como normales (se descartan por ambiguos):
+grupo
+urlhaus      138
+openphish     30
+dga            4
+
+Trafico real: 29 dominios; 0 son nuevos para el entrenamiento (los otros 29 ya estaban en Tranco/Alexa).
+
+=== RESUMEN DEL DATASET ===
+split                  test  train
+label grupo                       
+0     benigno_alexa    7408  29632
+      benigno_tranco  19977  79907
+1     dga             10790  43157
+      openphish          13     54
+      urlhaus           375   1498
+
+Fuentes solo para el examen (no se entrena con ellas): ['openphish', 'urlhaus']
+train=152696  test=38563  real_test=0  (maliciosos en train: 28.3%)
+
+======================================================================
+1) VALIDACION CRUZADA (5 pliegues)
+======================================================================
+  pliegue 1/5 listo (14 s)
+  pliegue 2/5 listo (22 s)
+  pliegue 3/5 listo (31 s)
+  pliegue 4/5 listo (40 s)
+  pliegue 5/5 listo (49 s)
+           AUC          PR_AUC         TPR@FPR0.5%        
+          mean     std    mean     std        mean     std
+modelo                                                    
+ens     0.9812  0.0007  0.9661  0.0008      0.7477  0.0124
+lr      0.9824  0.0007  0.9670  0.0016      0.7464  0.0123
+xgb     0.9274  0.0011  0.8781  0.0010      0.5118  0.0046
+
+Umbrales elegidos con las predicciones fuera-de-pliegue (ensamble):
+  ALERTA  (FPR~0.50%): prob > 0.5893
+  BLOQUEO (FPR~0.05%): prob > 0.9092
+
+======================================================================
+2) EXAMEN FINAL (20% que el modelo nunca vio; umbrales ya fijados)
+======================================================================
+           AUC  PR_AUC  TPR@FPR0.5%
+modelo                             
+xgb     0.9129  0.8649       0.4994
+lr      0.9723  0.9571       0.7477
+ens     0.9686  0.9535       0.7376
+
+Ensamble con los umbrales fijados:
+  ALERTA   detecta  71.8% de los maliciosos | falsas alarmas 0.442% de los normales | precision estimada con 1% de maliciosos reales: 62.1%
+  BLOQUEO  detecta  44.3% de los maliciosos | falsas alarmas 0.040% de los normales | precision estimada con 1% de maliciosos reales: 91.8%
+
+Por fuente (umbral ALERTA): maliciosos -> % detectado | normales -> % de falsas alarmas
+                          n  marcado
+label grupo                         
+0     benigno_alexa    7408   0.0069
+      benigno_tranco  19977   0.0035
+1     dga             10790   0.7432
+      openphish          13   0.0769
+      urlhaus           375   0.0160
+
+Solo DGA vs normales (sin las fuentes de solo examen): AUC = 0.9814
+  ALERTA   detecta  74.3% de los DGA | falsas alarmas 0.442% de los normales
+  BLOQUEO  detecta  45.9% de los DGA | falsas alarmas 0.040% de los normales
+
+======================================================================
+3) GENERALIZACION: entrenar SIN una fuente y probar en ella
+======================================================================
+(AUC y deteccion al 0.5% de falsas alarmas, medidos contra los normales del examen)
+
+DGA con familias NUNCA vistas (se excluyen del entrenamiento: ['ramdo', 'necurs', 'pykspa', 'cryptolocker', 'vawtrak'])
+     familia    n  detecta_al_0.5%FP
+       ramdo 2400             0.9546
+      necurs 2336             0.8643
+      pykspa 2400             0.4596
+cryptolocker 2400             0.8979
+     vawtrak 2400             0.0062
+  AUC conjunto: 0.9552
+
+======================================================================
+4) TRAFICO REAL RESERVADO (dominios nuevos, nunca usados en el entrenamiento)
+======================================================================
+No hay trafico real reservado. Pon .txt/.csv con hosts en la carpeta C:\Users\Tu Unica Esperanza\Desktop\ARTICULO CIENTIFICO\ML - movil\datos\dns_real/ (minimo recomendado: varios cientos de dominios) y vuelve a correr.
+
+======================================================================
+5) MODELO FINAL
+======================================================================
+Guardado: modelo_dns_v2.pkl  (entrenado con 190871 dominios, allowlist de 20000 dominios populares)
+Tiempo total: 1.5 min

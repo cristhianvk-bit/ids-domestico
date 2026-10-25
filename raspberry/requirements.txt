@@ -5,3 +5,5 @@ xgboost-cpu==3.4.1
 scikit-learn==1.9.1
 pandas
 joblib
+numpy
+tldextract
