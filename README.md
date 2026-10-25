@@ -10,6 +10,7 @@ Sin inspección profunda de paquetes (DPI) y sin descifrar HTTPS: solo se usan n
 |---|---|
 | [`modelos_oficiales/`](modelos_oficiales/) | Los 2 modelos de ML del sistema: `modelo_dns_v2.pkl` (dominios DGA) y `modelo_netflow_combinado_xgb.pkl` (flujos). Qué detecta cada uno y cómo abrirlos: [`LEEME`](modelos_oficiales/LEEME.md). |
 | [`raspberry/`](raspberry/) | Todo lo que se instala en la Raspberry Pi: sumidero DNS, captura y clasificación de flujos, respuesta activa. Instalación y uso: [`LEEME`](raspberry/LEEME.md). |
+| [`router/`](router/) | Lo que se instala en el router: reglas nftables para que la Raspberry pueda bloquear IPs, y la configuración de referencia del laboratorio: [`LEEME`](router/LEEME.md). |
 | [`entrenamiento/`](entrenamiento/) | Scripts para descargar los datasets, entrenar y evaluar los modelos, experimentos y resultados citados en el artículo: [`LEEME`](entrenamiento/LEEME.md). |
 
 ## Resumen de cómo protege
